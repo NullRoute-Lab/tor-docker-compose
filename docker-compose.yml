@@ -1,72 +1,72 @@
 version: "3.5"
 
 services:
-  # tor:
-  #   image: wizardrysteamworks/tor-snowflake:latest
-  #   container_name: tor
-  #   restart: always
-  #   # Expose only to host's loopback
-  #   ports:
-  #     - "9050:9050"   # Tor SOCKS
-  #     - "9053:9053"   # Tor control (optional)
-  #   volumes:
-  #     - ./tor/etc:/run/tor/config:Z
-  #     - ./tor/data:/run/tor/data:Z
+  # tor:
+  #   image: wizardrysteamworks/tor-snowflake:latest
+  #   container_name: tor
+  #   restart: always
+  #   # Expose only to host's loopback
+  #   ports:
+  #     - "9050:9050"   # Tor SOCKS
+  #     - "9053:9053"   # Tor control (optional)
+  #   volumes:
+  #     - ./tor/etc:/run/tor/config:Z
+  #     - ./tor/data:/run/tor/data:Z
 
-  multitor:
-    build: ./multitor
-    container_name: multitor
-    ports:
-      - "16378:16378" # Custom Load-balancer
-      - "16379:16379" # Maps host port 16379 to container port 16379 (HAProxy)
-      - "16380:16380" # HAProxy Stats
-    volumes:
-      - ./multitor/templates:/usr/src/app/templates:Z # Maps custom templates from host to container
-    environment:
-      ## More Instances = More Untracability + More Chance Of Good Circuits & Less Top_N_Proxies = Better Ping & Balanced Top_N_Proxies = More Speed Due To Good Circuits Concurrency
-      ## For Time-Sensitive Stuff Such As Gaming Better To Use Ping Check & For Speed-Sensitive Stuff Better To Use Download Check (TODO: Two Separate Socks5 Server)
-      - TOR_INSTANCES=25 # Default number of Tor instances, can be overridden in .env file or by CLI
-      - PROXY_MODE=custom_lb # Proxy Mode Options: socks, custom_lb
-      - LB_Top_N_Proxies=1 # number of proxies to roundrobin for custom_lb 
-      - LB_Check_Mode=1 # 0 = ping check, 1 = download check
-    cap_add:
-      - NET_ADMIN # Required by Tor for some operations, and potentially by HAProxy/Privoxy.
-    restart: always
-  
-  # dpyproxy:
-  #   build: ./dpyproxy
-  #   ports:
-  #     - "4433:4433" # Proxy-Server
-  #   restart: always
-  #   command: ["--frag_size", "20", "--debug", "--port", "4433", "--host", "0.0.0.0"]
-  
-  # psiphon:
-  #   image: swarupsengupta2007/psiphon:latest
-  #   container_name: psiphon
-  #   depends_on:
-  #     - multitor
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #   volumes:
-  #     - ./psiphon:/config:Z
-  #   ports:
-  #     - "1080:1080"   # Psiphon SOCKS
-  #     - "8080:8080"   # Psiphon HTTP
-  #   restart: always
+  multitor:
+    build: ./multitor
+    container_name: multitor
+    ports:
+      - "16378:16378" # Custom Load-balancer
+      - "16379:16379" # Maps host port 16379 to container port 16379 (HAProxy)
+      - "16380:16380" # HAProxy Stats
+    volumes:
+      - ./multitor/templates:/usr/src/app/templates:Z # Maps custom templates from host to container
+    environment:
+      ## More Instances = More Untracability + More Chance Of Good Circuits & Less Top_N_Proxies = Better Ping & Balanced Top_N_Proxies = More Speed Due To Good Circuits Concurrency
+      ## For Time-Sensitive Stuff Such As Gaming Better To Use Ping Check & For Speed-Sensitive Stuff Better To Use Download Check (TODO: Two Separate Socks5 Server)
+      - TOR_INSTANCES=25 # Default number of Tor instances, can be overridden in .env file or by CLI
+      - PROXY_MODE=custom_lb # Proxy Mode Options: socks, custom_lb
+      - LB_Top_N_Proxies=1 # number of proxies to roundrobin for custom_lb 
+      - LB_Check_Mode=1 # 0 = ping check, 1 = download check
+    cap_add:
+      - NET_ADMIN # Required by Tor for some operations, and potentially by HAProxy/Privoxy.
+    restart: always
+  
+  # dpyproxy:
+  #   build: ./dpyproxy
+  #   ports:
+  #     - "4433:4433" # Proxy-Server
+  #   restart: always
+  #   command: ["--frag_size", "20", "--debug", "--port", "4433", "--host", "0.0.0.0"]
+  
+  psiphon:
+    image: swarupsengupta2007/psiphon:latest
+    container_name: psiphon
+    depends_on:
+      - multitor
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./psiphon:/config:Z
+    ports:
+      - "1080:1080"   # Psiphon SOCKS
+      - "8080:8080"   # Psiphon HTTP
+    restart: always
 
-  # Note: Doesn't Work As Tor Socks5 Doesn't Support UDP Protocol.
-  # warp:
-  #   build: ./warp
-  #   container_name: warp
-  #   depends_on:
-  #     - tor
-  #   ports:
-  #     - "8086:8086"   # WARP SOCKS5 Proxy
-  #   cap_add:
-  #     - NET_ADMIN     # Required to create TUN device and manage routing
-  #   devices:
-  #     - /dev/net/tun  # Required to mount the TUN device
-  #   restart: always
+  # Note: Doesn't Work As Tor Socks5 Doesn't Support UDP Protocol.
+  # warp:
+  #   build: ./warp
+  #   container_name: warp
+  #   depends_on:
+  #     - tor
+  #   ports:
+  #     - "8086:8086"   # WARP SOCKS5 Proxy
+  #   cap_add:
+  #     - NET_ADMIN     # Required to create TUN device and manage routing
+  #   devices:
+  #     - /dev/net/tun  # Required to mount the TUN device
+  #   restart: always
 
-  ### Note: UDP VPN Services Such As Wireguard And OpenVPN UDP Can't Be Used Due to Tor Socks5 Lack Of UDP Support; Only TCP VPNs Such As OpenVPN TCP And SSH And TCP Proxies Will Work. ###
+  ### Note: UDP VPN Services Such As Wireguard And OpenVPN UDP Can't Be Used Due to Tor Socks5 Lack Of UDP Support; Only TCP VPNs Such As OpenVPN TCP And SSH And TCP Proxies Will Work. ###
