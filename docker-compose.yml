@@ -49,20 +49,20 @@ services:
   #   restart: always
   #   command: ["--frag_size", "20", "--debug", "--port", "4433", "--host", "0.0.0.0"]
   
-  # psiphon:
-  #   image: swarupsengupta2007/psiphon:latest
-  #   container_name: psiphon
-  #   depends_on:
-  #     - multitor
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #   volumes:
-  #     - ./psiphon:/config:Z
-  #   ports:
-  #     - "1080:1080"   # Psiphon SOCKS
-  #     - "8080:8080"   # Psiphon HTTP
-  #   restart: always
+  psiphon:
+    image: swarupsengupta2007/psiphon:latest
+    container_name: psiphon
+    depends_on:
+      - multitor
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./psiphon:/config:Z
+    ports:
+      - "1080:1080"   # Psiphon SOCKS
+      - "8080:8080"   # Psiphon HTTP
+    restart: always
 
   # Note: Doesn't Work As Tor Socks5 Doesn't Support UDP Protocol.
   # warp:
