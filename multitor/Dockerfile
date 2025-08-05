@@ -28,7 +28,7 @@ RUN wget -qO /usr/bin/conjure-client \
 WORKDIR /usr/src/app
 
 # Install multitor
-ADD "https://api.github.com/repos/PacketCipher/multitor/commits?per_page=1" /usr/src/latest_commit
+ADD "https://api.github.com/repos/NullRoute-Lab/multitor/commits?per_page=1" /usr/src/latest_commit
 RUN git clone https://github.com/PacketCipher/multitor.git .
 RUN chmod +x setup.sh && \
     ./setup.sh install && \
