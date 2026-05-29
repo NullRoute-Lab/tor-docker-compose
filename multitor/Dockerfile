@@ -23,7 +23,7 @@ RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/main/" >> /etc/apk/reposito
 
 # Build and install Conjure Pluggable Transport
 RUN if [ "$TARGETARCH" = "amd64" ]; then \
-        wget -qO /usr/bin/conjure-client "https://github.com/PacketCipher/tor-conjure/releases/download/v0.1.0/conjure-client-linux-amd64-musl"; \
+        wget -qO /usr/bin/conjure-client "https://github.com/NullRoute-Lab/tor-conjure/releases/download/v0.1.0-arm1/conjure-client-linux-amd64-musl"; \
     elif [ "$TARGETARCH" = "arm64" ]; then \
         wget -qO /usr/bin/conjure-client "https://github.com/NullRoute-Lab/tor-conjure/releases/download/v0.1.0-arm1/conjure-client-linux-arm64-musl"; \
     else \
@@ -36,8 +36,8 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
 WORKDIR /usr/src/app
 
 # Install multitor
-ADD "https://api.github.com/repos/PacketCipher/multitor/commits?per_page=1" /usr/src/latest_commit
-RUN git clone https://github.com/PacketCipher/multitor.git .
+ADD "https://api.github.com/repos/NullRoute-Lab/multitor/commits?per_page=1" /usr/src/latest_commit
+RUN git clone https://github.com/NullRoute-Lab/multitor.git .
 RUN chmod +x setup.sh && \
     ./setup.sh install && \
     # Create log folders required by multitor
