@@ -1,6 +1,8 @@
 # Use alpine as the base image
 FROM alpine:latest
 
+ARG TARGETARCH
+
 # Environment variables for package versions or configurations
 ENV BUILD_PACKAGES="build-base openssl-dev ca-certificates wget curl git vim" \
     PACKAGES="tor lyrebird webtunnel meek snowflake sudo bash haproxy privoxy procps" \
@@ -20,8 +22,14 @@ RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/main/" >> /etc/apk/reposito
 #     chmod +x /usr/bin/snowflake-client
 
 # Build and install Conjure Pluggable Transport
-RUN wget -qO /usr/bin/conjure-client \
-    "https://github.com/PacketCipher/tor-conjure/releases/download/v0.1.0/conjure-client-linux-amd64-musl" && \
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        wget -qO /usr/bin/conjure-client "https://github.com/PacketCipher/tor-conjure/releases/download/v0.1.0/conjure-client-linux-amd64-musl"; \
+    elif [ "$TARGETARCH" = "arm64" ]; then \
+        wget -qO /usr/bin/conjure-client "https://github.com/NullRoute-Lab/tor-conjure/releases/download/v0.1.0-arm1/conjure-client-linux-arm64-musl"; \
+    else \
+        echo "Unsupported architecture: $TARGETARCH"; \
+        exit 1; \
+    fi && \
     chmod +x /usr/bin/conjure-client
 
 # Set up application directory

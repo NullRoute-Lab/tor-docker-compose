@@ -1,9 +1,9 @@
-version: "2.4"
+version: "3.8"
 
 services:
-  # tor:
+  # tor2:
   #   image: wizardrysteamworks/tor-snowflake:latest
-  #   container_name: tor
+  #   container_name: tor2
   #   restart: always
   #   # Expose only to host's loopback
   #   ports:
@@ -13,14 +13,14 @@ services:
   #     - ./tor/etc:/run/tor/config:Z
   #     - ./tor/data:/run/tor/data:Z
 
-  multitor:
+  multitor2:
     # Note: rebuild this frequently as newer snowflake clients offer more stealth
     build: ./multitor
-    container_name: multitor
+    container_name: multitor2
     ports:
-      - "16378:16378" # Custom Load-balancer
-      - "16379:16379" # Maps host port 16379 to container port 16379 (HAProxy)
-      - "16380:16380" # HAProxy Stats
+      - "26378:16378" # Custom Load-balancer
+      - "26379:16379" # Maps host port 16379 to container port 16379 (HAProxy)
+      - "26380:16380" # HAProxy Stats
     volumes:
       - ./multitor/templates:/usr/src/app/templates:Z # Maps custom templates from host to container
     environment:
@@ -44,37 +44,37 @@ services:
   #     #  # Lower Priority Than Default Processes (Default is 1024)
   #     #    cpu_shares: 512
   
-  # dpyproxy:
+  # dpyproxy2:
   #   build: ./dpyproxy
   #   ports:
   #     - "4433:4433" # Proxy-Server
   #   restart: always
   #   command: ["--frag_size", "20", "--debug", "--port", "4433", "--host", "0.0.0.0"]
   
-  psiphon:
+  psiphon2:
     image: swarupsengupta2007/psiphon:latest
-    container_name: psiphon
+    container_name: psiphon2
     depends_on:
-      - multitor
+      - multitor2
     environment:
       - PUID=1000
       - PGID=1000
     volumes:
       - ./psiphon:/config:Z
     ports:
-      - "1080:1080"   # Psiphon SOCKS
-      - "8080:8080"   # Psiphon HTTP
+      - "2080:1080"   # Psiphon SOCKS
+      - "9080:8080"   # Psiphon HTTP
     restart: always
 
   # Note 1: Doesn't Work As Tor Socks5 Doesn't Support UDP Protocol.
   # Note 2: But It May Work With Psiphon
-  # warp:
+  # warp2:
   #   build: ./warp
-  #   container_name: warp
+  #   container_name: warp2
   #   depends_on:
-  #     - psiphon
+  #     - psiphon2
   #   ports:
-  #     - "8086:8086"   # WARP SOCKS5 Proxy
+  #     - "9086:8086"   # WARP SOCKS5 Proxy
   #   cap_add:
   #     - NET_ADMIN     # Required to create TUN device and manage routing
   #   devices:
