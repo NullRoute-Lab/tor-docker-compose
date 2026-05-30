@@ -1,0 +1,55 @@
+name: Weekly Cloud Cache Seeding
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Start stack
+        run: |
+          docker compose up -d multitor2 psiphon2
+
+      - name: Let Psiphon run to fetch global node directory
+        run: |
+          echo "Waiting for 90 seconds..."
+          sleep 90
+
+      - name: Gracefully stop containers
+        run: |
+          # Stop containers to flush data and release file locks
+          docker compose stop
+
+      - name: Seed files
+        run: |
+          mkdir -p psiphon-seed
+          cp ./psiphon/remote_server_list ./psiphon-seed/ || true
+          cp ./psiphon/psiphon.boltdb ./psiphon-seed/ || true
+
+      - name: Clean up environment
+        run: |
+          docker compose down -v
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add psiphon-seed/
+          # Only commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: Weekly Cloud Cache Seeding [skip ci]"
+            git push origin HEAD
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
