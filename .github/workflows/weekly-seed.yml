@@ -21,8 +21,12 @@ jobs:
 
       - name: Let Psiphon run to fetch global node directory
         run: |
-          echo "Waiting for 150 seconds..."
-          sleep 150
+          echo "Waiting for 240 seconds..."
+          sleep 240
+          echo "=== MULTITOR LOGS ==="
+          docker logs multitor2 || true
+          echo "=== PSIPHON LOGS ==="
+          docker logs psiphon2 || true
 
       - name: Gracefully stop containers
         run: |
@@ -33,6 +37,7 @@ jobs:
         run: |
           mkdir -p psiphon-seed
           sudo cp -r ./psiphon/ca.psiphon.PsiphonTunnel.tunnel-core ./psiphon-seed/ 2>/dev/null || true
+          sudo chown -R runner:docker ./psiphon-seed
 
       - name: Clean up environment
         run: |
