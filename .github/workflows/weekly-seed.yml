@@ -21,8 +21,8 @@ jobs:
 
       - name: Let Psiphon run to fetch global node directory
         run: |
-          echo "Waiting for 240 seconds..."
-          sleep 240
+          echo "Waiting for 420 seconds..."
+          sleep 420
           echo "=== MULTITOR LOGS ==="
           docker logs multitor2 || true
           echo "=== PSIPHON LOGS ==="
