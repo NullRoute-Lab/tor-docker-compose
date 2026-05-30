@@ -64,7 +64,7 @@ services:
       - ./psiphon-seed:/seed:ro
     entrypoint: >
       /bin/sh -c '
-      if [ ! -f /config/remote_server_list ] && [ -d /seed ]; then
+      if [ ! -f /config/ca.psiphon.PsiphonTunnel.tunnel-core/remote_server_list ] && [ -d /seed/ca.psiphon.PsiphonTunnel.tunnel-core ]; then
           echo "Cold start detected. Injecting emergency backup cache..."
           cp -r /seed/* /config/ 2>/dev/null || true
           chown -R 1000:1000 /config/
