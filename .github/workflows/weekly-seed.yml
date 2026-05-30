@@ -15,16 +15,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Start stack
+      - name: Start MultiTor and Warm Up
         run: |
-          docker compose up -d multitor2 psiphon2
-
-      - name: Let Psiphon run to fetch global node directory
-        run: |
-          echo "Waiting for 420 seconds..."
-          sleep 420
+          # Scale down to 2 instances dynamically ONLY for GitHub Runner to avoid CPU starvation
+          export TOR_INSTANCES=2
+          echo "TOR_INSTANCES=2" >> $GITHUB_ENV
+          docker compose up -d multitor2
+          echo "Waiting 180 seconds for Tor circuits to build and warm up..."
+          sleep 180
           echo "=== MULTITOR LOGS ==="
           docker logs multitor2 || true
+
+      - name: Start Psiphon and Fetch Cache
+        run: |
+          # Now that Tor is hot, start Psiphon
+          docker compose up -d psiphon2
+          echo "Waiting 120 seconds for Psiphon to download the cache..."
+          sleep 120
           echo "=== PSIPHON LOGS ==="
           docker logs psiphon2 || true
 
