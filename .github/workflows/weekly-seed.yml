@@ -15,11 +15,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Patch Compose for GitHub Runner
+        run: |
+          # Dynamically patch the compose file to 2 instances ONLY in the ephemeral runner.
+          # This bypasses the hardcoded limit without polluting the repository code.
+          sed -i 's/TOR_INSTANCES=16/TOR_INSTANCES=2/g' docker-compose.yml
+
       - name: Start MultiTor and Warm Up
         run: |
-          # Scale down to 2 instances dynamically ONLY for GitHub Runner to avoid CPU starvation
-          export TOR_INSTANCES=2
-          echo "TOR_INSTANCES=2" >> $GITHUB_ENV
           docker compose up -d multitor2
           echo "Waiting 180 seconds for Tor circuits to build and warm up..."
           sleep 180
@@ -28,10 +31,10 @@ jobs:
 
       - name: Start Psiphon and Fetch Cache
         run: |
-          # Now that Tor is hot, start Psiphon
-          docker compose up -d psiphon2
-          echo "Waiting 120 seconds for Psiphon to download the cache..."
-          sleep 120
+          # Start Psiphon. The --no-recreate flag strictly forbids Docker from destroying our warmed-up Tor!
+          docker compose up -d --no-recreate psiphon2
+          echo "Waiting 180 seconds for Psiphon to download the cache..."
+          sleep 180
           echo "=== PSIPHON LOGS ==="
           docker logs psiphon2 || true
 
@@ -48,6 +51,8 @@ jobs:
 
       - name: Clean up environment
         run: |
+          # Restore the original compose file so it doesn't get committed
+          git checkout docker-compose.yml
           docker compose down -v
 
       - name: Commit and push changes
