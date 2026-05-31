@@ -12,7 +12,7 @@
 - implement realtime rl packet modification with dpi evasion as feedback
 - implement realtime parameters tuning
 - implement LB_Algorithm
-- implement sequential retry per request, sequential retry per session, loadbalance per request, loadbalance per session based on random, sorted based on ping or download
+- multitor/conjure core: implement sequential retry per request, sequential retry per session, loadbalance per request, loadbalance per session based on random, sorted based on ping or download
 - implmenet dns scanner and recursive dns scanner with real delay test for dns tunnel templates and conjure templates
 - implement script to replace every static entry and middle and exit nodes in all templates or disable them all
 - implement exotic protocols as bridges (google drive, etc)
