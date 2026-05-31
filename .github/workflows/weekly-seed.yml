@@ -45,6 +45,8 @@ jobs:
 
       - name: Clean up environment
         run: |
+          # Fix permissions so git can modify the files
+          sudo chown -R runner:docker ./psiphon docker-compose.yml
           # Restore the original files so they don't get committed
           git checkout docker-compose.yml
           git checkout psiphon/psiphon.config
