@@ -26,7 +26,7 @@ services:
     environment:
       ## More Instances = More Untracability + More Chance Of Good Circuits & Less Top_N_Proxies = Better Ping & Balanced Top_N_Proxies = More Speed Due To Good Circuits Concurrency
       ## For Time-Sensitive Stuff Such As Gaming And Realtime Messaging Better To Use Ping Check & For Speed-Sensitive Stuff Better To Use Download Check (TODO: Two Separate Socks5 Server)
-      - TOR_INSTANCES=16 # Default number of Tor instances, can be overridden in .env file or by CLI, 2x number of templates for default is preferred, 4x number of templates for high-restricted networks is preferred, for custom cases such as snowflake only or snowflake + relay scanner only you would assign high quantity for maximum chance of connection, regardless of number of instances the maximum bootstrap time is 30 minutes.
+      - TOR_INSTANCES=26 # Default number of Tor instances, can be overridden in .env file or by CLI, 2x number of templates for default is preferred, 4x number of templates for high-restricted networks is preferred, for custom cases such as snowflake only or snowflake + relay scanner only you would assign high quantity for maximum chance of connection, regardless of number of instances the maximum bootstrap time is 30 minutes.
       - PROXY_MODE=custom_lb # Proxy Mode Options: socks, custom_lb
       - LB_Top_N_Proxies=4 # number of proxies to roundrobin for custom_lb, for networks with high interrupts and dpi the higher number is better but it may affect speed inversely
       # - LB_Algorithm=sequential # sequential algorithm will retry each request sequentially sorted by check mode
