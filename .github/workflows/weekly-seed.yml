@@ -18,7 +18,7 @@ jobs:
       - name: Patch configs for Direct Cloud Seeding
         run: |
           # Scale down Tor to avoid CPU starvation
-          sed -i 's/TOR_INSTANCES=16/TOR_INSTANCES=2/g' docker-compose.yml
+          sed -i -E 's/TOR_INSTANCES=[0-9]+/TOR_INSTANCES=2/g' docker-compose.yml
           # Remove upstream proxy from Psiphon config ONLY in the runner.
           # GitHub Actions has open internet, so Psiphon can seed instantly!
           sed -i '/UpstreamProxyUrl/d' psiphon/psiphon.config
