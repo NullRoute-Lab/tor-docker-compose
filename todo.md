@@ -20,4 +20,8 @@
 - implement socks5/http/https outbound proxy
 - implement socks5/http/https proxy scanner and real delay to find working ones
 - implement snowflake and other bridges scanner to find working ones and select them (tor-bridges-collector can be used as sources)
-- implement beast mode for massive parallel scan to have very faster time to connection and parallel result can be sorted based on ping or download so for each bridge type the parallel scan for select the best bridge of that type (for maximum performance it will do parallel scan with max n concurrent but the every bridges in the list and to avoid latency of bootstrap it will do realtime update of the sorted list for each bridge type) 
+- implement beast mode for massive parallel scan to have very faster time to connection and parallel result can be sorted based on ping or download so for each bridge type the parallel scan for select the best bridge of that type (for maximum performance it will do parallel scan with max n concurrent but the every bridges in the list and to avoid latency of bootstrap it will do realtime update of the sorted list for each bridge type)
+- implement multi-tor exit location and psiphon location env variables
+- implement tun mode for tor or via socks2tun with env variable to configure it's ip and port (e.g multi-tor or psiphon)
+- implement period scan of direct and bridges
+- take inspirations from onionhop and it's bridge scanner and it's bridge collector (both client-side and server-side/action-side)
